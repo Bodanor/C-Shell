@@ -1,15 +1,16 @@
-#ifndef __SHELL_h__
-#define __SHELL_h__
+#ifndef __SHELL_H__
+#define __SHELL_H__
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "canonical.h"
+#include "input.h"
+#include "terminal.h"
 
-typedef struct shell_t {
-    TerminalCanonical *current_canonical;
-}Shell;
+typedef struct shell_s {
+    Input *current_input;
+    Terminal *current_term;
+}shell_t;
 
-Shell *init_shell(void);
-void destroy_shell(Shell *shell);
+shell_t *init_shell(void);
 #endif

@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <termios.h>
 
-struct canonical_t {
-    struct termios initial_saved_can_prop;
-    struct termios current_can_prop;
-};
 
 TerminalCanonical *save_current_canonical_mode(void)
 {

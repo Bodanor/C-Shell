@@ -1,17 +1,24 @@
+#include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
-
 #include "canonical.h"
 #include "input.h"
-#include "shell.h"
+#include "terminal.h"
 
 int main()
 {
-    Shell *shell;
-    shell = init_shell();
-    disable_canonical_mode(shell->current_canonical);
-    char *input = command_input();
-    printf("%s",input);
-    restore_initial_mode(shell->current_canonical);
-    destroy_shell(shell);
+
+    
+    Terminal *current_terminal= init_terminal();
+    Input *input;
+
+    input = read_input(current_terminal);
+    if (input == NULL)
+        return 0;
+    else {
+    printf("%s",input->current_input);
+    }
+    restore_initial_mode(current_terminal->term_canonical);
+    destroy_input(input);
+    destroy_terminal(current_terminal);
+
 }
