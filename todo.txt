@@ -1,1 +1,0 @@
-faire en sorte que terminal ne contienne plus de shell et que shell devienne la structure principale. Terminal ne contiendra que le cursor et la taille de la fenetre.
