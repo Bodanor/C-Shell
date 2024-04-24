@@ -9,7 +9,7 @@ shell_t *init_shell(void)
     if (temp == NULL)
         return NULL;
     temp->current_input = NULL;
-
+    
     return temp; 
 
 }

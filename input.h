@@ -8,6 +8,8 @@
 
 #include "terminal.h"
 
+typedef struct terminal_t Terminal;
+
 typedef struct input_t {
     char *current_input;
     unsigned long input_length;

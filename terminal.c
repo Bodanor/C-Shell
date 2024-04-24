@@ -1,19 +1,27 @@
 #include "terminal.h"
-#include "canonical.h"
 #include "cursor.h"
-#include "terminal_window.h"
-#include <bits/types/sigset_t.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 Terminal *terminal_window_signal_ptr = NULL;
 
 static void set_signal_handlers(void);
+static void redraw_input(Input *current_input);
 
+static void redraw_input(Input *current_input)
+{
+    int i;
+    flush_cursor(terminal_window_signal_ptr->beginning_cursor);
+    printf("\033[0J");
+    
+    for(i = 0; i < current_input->input_length; i++)
+        putchar(current_input->current_input[i]);
+    //update_cursor_pos(terminal_window_signal_ptr->current_cursor);
+
+}
 void window_resize_handler(int signum)
 {
+
    update_cursor_pos(terminal_window_signal_ptr->current_cursor);
+   redraw_input(terminal_window_signal_ptr->current_shell->current_input);
 
 }
 
@@ -55,6 +63,9 @@ Terminal *init_terminal(void)
 
     current_terminal->current_cursor = init_cursor();
 
+    current_terminal->beginning_cursor = init_cursor();
+    
+    current_terminal->current_shell = init_shell();
     set_signal_handlers();
 
     return current_terminal;
@@ -68,3 +79,5 @@ void destroy_terminal(Terminal *current_terminal)
         free(current_terminal);
     }
 }
+
+

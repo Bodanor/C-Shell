@@ -1,9 +1,5 @@
 #include "input.h"
 #include "cursor.h"
-#include "shell.h"
-#include "terminal.h"
-#include <linux/limits.h>
-#include <stdlib.h>
 
 static void handle_arrow_keys(Terminal *current_terminal, Input *input, char **buffer_ptr);
 static void delete_char_on_screen(Terminal *current_terminal, Input *input, char **buffer_ptr);
@@ -91,7 +87,8 @@ Input *read_input(Terminal *current_terminal)
     current_input->current_input = (char*)malloc(sizeof(char)*ARG_MAX);
     if (current_input->current_input == NULL)
         return NULL;
-
+    
+    current_terminal->current_shell->current_input = current_input;
     current_input->input_length = 0;
     
     buffer_ptr = current_input->current_input;
@@ -105,6 +102,8 @@ Input *read_input(Terminal *current_terminal)
     /* In raw mode, the enter key returns a carriage return character. I could 
      * have enable '\n' in the termios properties but oh well ..
      */ 
+    
+  update_cursor_pos(current_terminal->beginning_cursor);  
 
     while(current_input->input_length < ARG_MAX -1 && (current_byte = getchar()) != '\r') {
         /* Put getchar here, so that loop doesnt break when buffer is full */
