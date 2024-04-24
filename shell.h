@@ -4,12 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "input.h"
-
-typedef struct input_t Input;
+#include "history.h"
 
 typedef struct shell_s {
-    Input *current_input;
+    history_t *history;
 }shell_t;
 
 shell_t *init_shell(void);

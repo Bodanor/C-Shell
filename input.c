@@ -1,8 +1,9 @@
 #include "input.h"
 #include "cursor.h"
+#include "history.h"
 
-static void handle_arrow_keys(Terminal *current_terminal, Input *input, char **buffer_ptr);
-static void delete_char_on_screen(Terminal *current_terminal, Input *input, char **buffer_ptr);
+static void handle_arrow_keys(Terminal *current_terminal,char *current_line , char **buffer_ptr);
+static void delete_char_on_screen(Terminal *current_terminal, char *current_line, char **buffer_ptr);
 static void put_char_on_screen(Terminal *current_terminal, const unsigned int c);
 
 
@@ -12,7 +13,7 @@ static void put_char_on_screen(Terminal *current_terminal, const unsigned int c)
         increment_cursor(current_terminal->current_window, current_terminal->current_cursor); 
 
 }
-static void handle_arrow_keys(Terminal *current_terminal, Input *input, char **buffer_ptr)
+static void handle_arrow_keys(Terminal *current_terminal, char *curent_line, char **buffer_ptr)
 {
     unsigned char arrow[3];
     
@@ -72,7 +73,7 @@ static void delete_char_on_screen(Terminal *current_terminal, Input *input, char
     flush_cursor(current_terminal->current_cursor);
 }
 
-Input *read_input(Terminal *current_terminal)
+int read_input(Terminal *current_terminal)
 {
     Input *current_input;
     char *buffer_ptr;
@@ -155,7 +156,7 @@ Input *read_input(Terminal *current_terminal)
 
     putchar('\n');
     current_input->current_input[current_input->input_length + 1] = '\0';
-    return current_input;
+    return 0;
     
 }
 

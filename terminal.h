@@ -12,8 +12,6 @@
 #include "canonical.h"
 #include "shell.h"
 
-typedef struct shell_s shell_t;
-
 typedef struct terminal_t {
     term_window_t *current_window;
     Cursor *current_cursor;
