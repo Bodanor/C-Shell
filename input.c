@@ -2,7 +2,7 @@
 #include "cursor.h"
 #include "history.h"
 #include "terminal.h"
-#include <linux/limits.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,24 +17,26 @@ static void arrow_down(Terminal *current_terminal, char **buffer_ptr);
 static void arrow_down(Terminal *current_terminal, char **buffer_ptr)
 {
     int i;
-    
-   if (current_terminal->current_shell->history->index + 1 >= current_terminal->current_shell->history->number_lines){
-       current_terminal->current_shell->history->index = current_terminal->current_shell->history->number_lines;
-        history_line_cpy(current_terminal->current_shell->old_line_input, current_terminal->current_shell->current_line_input); 
-   }
-   else { 
-       cycle_history_down(current_terminal->current_shell->history, current_terminal->current_shell->current_line_input);
-   }
-   clear_from_cursor(current_terminal->beginning_cursor, current_terminal->current_cursor);
 
-   /* The history contains the commands with the \n character, therefore we have to print the command without it */
-   for (i = 0; i < current_terminal->current_shell->current_line_input->line_length -1; i++){
-       putchar(current_terminal->current_shell->current_line_input->line[i]); 
-       increment_cursor(current_terminal->current_window, current_terminal->current_cursor);
-   }
-   /* Reset the buffer pointer to point to the end of the current line */
+    if (strcmp(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF") != 0) {
+        if (current_terminal->current_shell->history->index + 1 == current_terminal->current_shell->history->number_lines){
+            current_terminal->current_shell->history->index = current_terminal->current_shell->history->number_lines;
+                history_line_cpy(current_terminal->current_shell->old_line_input, current_terminal->current_shell->current_line_input); 
+        }
+        else { 
+            cycle_history_down(current_terminal->current_shell->history, current_terminal->current_shell->current_line_input);
+        }
+        clear_from_cursor(current_terminal->beginning_cursor, current_terminal->current_cursor);
 
-   *buffer_ptr = &current_terminal->current_shell->current_line_input->line[current_terminal->current_shell->current_line_input->line_length];
+        /* The history contains the commands with the \n character, therefore we have to print the command without it */
+        for (i = 0; i < current_terminal->current_shell->current_line_input->line_length -1; i++){
+            putchar(current_terminal->current_shell->current_line_input->line[i]); 
+            increment_cursor(current_terminal->current_window, current_terminal->current_cursor);
+        }
+        /* Reset the buffer pointer to point to the end of the current line */
+
+        *buffer_ptr = &current_terminal->current_shell->current_line_input->line[current_terminal->current_shell->current_line_input->line_length];
+    }
 }
 
 static void arrow_up(Terminal *current_terminal, char **buffer_ptr)
@@ -43,7 +45,6 @@ static void arrow_up(Terminal *current_terminal, char **buffer_ptr)
 
     /* This should be a one shot thingy */
     if (strcmp(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF") == 0) {
-        printf("ONE SHOT !");
         history_line_cpy(current_terminal->current_shell->current_line_input, current_terminal->current_shell->old_line_input);
         /* Backup up the user input in case he changes his mind later on */
     }

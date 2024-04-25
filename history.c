@@ -1,5 +1,5 @@
 #include "history.h"
-#include <linux/limits.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +40,6 @@ static history_t *create_history()
 
     return temp_history;
 
-
 }
 
 static void destroy_line(history_line_t *line)
@@ -62,7 +61,7 @@ void add_to_history(history_t *history, history_line_t *line_to_add)
         shift_history(history);
     }
     history->history_lines[history->number_lines++] = line_to_add;
-    history->index++;
+    history->index = history->number_lines - 1;
 }
 int read_one_line_history(FILE *history_fd, history_t *history)
 {
@@ -105,7 +104,6 @@ int read_one_line_history(FILE *history_fd, history_t *history)
     }
     while (temp_history->number_lines < MAX_HISTORY_LINES && read_one_line_history(history_fd, temp_history) != -1)
         ;
-
 
     fclose(history_fd);
     *history = temp_history;
@@ -153,9 +151,9 @@ int add_command_to_history(history_t **history, history_line_t *command)
 
 void cycle_history_up(history_t *history,history_line_t *replace)
 {
+    history_line_cpy(history->history_lines[history->index], replace);
     if (history->index != 0)
         history->index--;
-    history_line_cpy(history->history_lines[history->index], replace);
 }
 
 void cycle_history_down(history_t *history, history_line_t *replace)
@@ -163,6 +161,7 @@ void cycle_history_down(history_t *history, history_line_t *replace)
     if (history->index < history->number_lines)
         history->index++;
     history_line_cpy(history->history_lines[history->index], replace);
+    
 }
 
 void history_line_cpy(history_line_t *src, history_line_t *dst)
