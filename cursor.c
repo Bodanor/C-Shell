@@ -1,5 +1,6 @@
 #include "cursor.h"
 #include "terminal_window.h"
+#include <stdio.h>
 
 static void get_cursor_pos(Cursor *cursor);
 static void update_tty_cursor(Cursor *cursor);
@@ -116,4 +117,11 @@ void flush_cursor(Cursor *cursor)
 {
     update_tty_cursor(cursor);
 
+}
+void clear_from_cursor(Cursor *beginning_cursor, Cursor *current_cursor)
+{
+    update_tty_cursor(beginning_cursor);
+    printf("\033[0J");
+    current_cursor->current_x = beginning_cursor->current_x;
+    current_cursor->current_y = beginning_cursor->current_y;
 }

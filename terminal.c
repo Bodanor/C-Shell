@@ -1,27 +1,26 @@
 #include "terminal.h"
 #include "cursor.h"
+#include "history.h"
 
 Terminal *terminal_window_signal_ptr = NULL;
 
 static void set_signal_handlers(void);
-static void redraw_input(Input *current_input);
+static void redraw_input(history_line_t *current_input);
 
-static void redraw_input(Input *current_input)
+static void redraw_input(history_line_t *current_input)
 {
     int i;
-    flush_cursor(terminal_window_signal_ptr->beginning_cursor);
-    printf("\033[0J");
     
-    for(i = 0; i < current_input->input_length; i++)
-        putchar(current_input->current_input[i]);
-    //update_cursor_pos(terminal_window_signal_ptr->current_cursor);
+   clear_from_cursor(terminal_window_signal_ptr->beginning_cursor, terminal_window_signal_ptr->current_cursor); 
 
+    for(i = 0; i < current_input->line_length; i++)
+        putchar(current_input->line[i]);
 }
 void window_resize_handler(int signum)
 {
 
    update_cursor_pos(terminal_window_signal_ptr->current_cursor);
-   redraw_input(terminal_window_signal_ptr->current_shell->current_input);
+   redraw_input(terminal_window_signal_ptr->current_shell->current_line_input);
 
 }
 

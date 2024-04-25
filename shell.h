@@ -8,6 +8,8 @@
 
 typedef struct shell_s {
     history_t *history;
+    history_line_t *current_line_input;
+    history_line_t *old_line_input;
 }shell_t;
 
 shell_t *init_shell(void);

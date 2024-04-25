@@ -14,9 +14,16 @@ typedef struct history_line_s{
 typedef struct history_s{
     history_line_t** history_lines;
     unsigned int number_lines;
+    unsigned int index;
 } history_t ;
 
-history_t *load_history(void);
+int load_history(history_t **history);
+history_line_t * create_history_line(void);
 void destroy_history(history_t *history);
-
+void cycle_history_up(history_t *history, history_line_t *replace);
+void cycle_history_down(history_t *history, history_line_t *replace);
+void shift_history(history_t *history);
+void print_history(history_t *history);
+void add_to_history(history_t *history, history_line_t *line_to_add);
+void history_line_cpy(history_line_t *src, history_line_t *dst);
 #endif
