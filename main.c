@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "canonical.h"
-#include "history.h"
 #include "input.h"
 #include "terminal.h"
 

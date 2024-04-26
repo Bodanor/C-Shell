@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <linux/limits.h>
 
 #define MAX_HISTORY_LINES 500
 
@@ -26,4 +27,6 @@ void shift_history(history_t *history);
 void print_history(history_t *history);
 void add_to_history(history_t *history, history_line_t *line_to_add);
 void history_line_cpy(history_line_t *src, history_line_t *dst);
+int check_index_out_of_bounds(history_t *history);
+
 #endif

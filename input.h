@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <string.h>
+#include <linux/limits.h>
 
 #include "terminal.h"
 #include "history.h"

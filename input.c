@@ -1,12 +1,8 @@
 #include "input.h"
 #include "cursor.h"
 #include "history.h"
+#include "shell.h"
 #include "terminal.h"
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 static void handle_arrow_keys(Terminal *current_terminal,char **buffer_ptr);
 static void delete_char_on_screen(Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr);
@@ -17,25 +13,46 @@ static void arrow_down(Terminal *current_terminal, char **buffer_ptr);
 static void arrow_down(Terminal *current_terminal, char **buffer_ptr)
 {
     int i;
+    int line_length;
+    shell_t *shell_ptr;
+    
 
-    if (strcmp(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF") != 0) {
-        if (current_terminal->current_shell->history->index + 1 == current_terminal->current_shell->history->number_lines){
-            current_terminal->current_shell->history->index = current_terminal->current_shell->history->number_lines;
-                history_line_cpy(current_terminal->current_shell->old_line_input, current_terminal->current_shell->current_line_input); 
+    shell_ptr = current_terminal->current_shell;
+    
+    /* Check that user has not began to input any commands before cycling into the history
+     * Check also that the index is not out of bounds, else we ignore the user history cycling
+    */
+    if (strcmp(shell_ptr->old_line_input->line, "0XDEADBEEF") != 0 && check_index_out_of_bounds(shell_ptr->history) != 0) {
+
+        /* If the user has edited it's line and wants to get back it's changes
+         * we shall verify that we are at the end of the history
+        */
+        if (shell_ptr->history->index  + 1 == shell_ptr->history->number_lines){
+            shell_ptr->history->index = shell_ptr->history->number_lines;
+            history_line_cpy(shell_ptr->old_line_input, shell_ptr->current_line_input); 
         }
+        /* If we are still in the history, we can cycle through the history */
         else { 
-            cycle_history_down(current_terminal->current_shell->history, current_terminal->current_shell->current_line_input);
+            cycle_history_down(shell_ptr->history, shell_ptr->current_line_input);
         }
+
+        /* Clear from the cursor to the end of the screen */
         clear_from_cursor(current_terminal->beginning_cursor, current_terminal->current_cursor);
+        
+       /* The history contains the newline character but the user input does not
+        * Therefore, we have to know if we are pulling from the history or the 
+        * previously saved user input.
+       */  
+        line_length = (check_index_out_of_bounds(shell_ptr->history)) ? shell_ptr->current_line_input->line_length -1 : shell_ptr->current_line_input->line_length;
 
         /* The history contains the commands with the \n character, therefore we have to print the command without it */
-        for (i = 0; i < current_terminal->current_shell->current_line_input->line_length -1; i++){
-            putchar(current_terminal->current_shell->current_line_input->line[i]); 
+        for (i = 0; i < line_length; i++){
+            putchar(shell_ptr->current_line_input->line[i]); 
             increment_cursor(current_terminal->current_window, current_terminal->current_cursor);
         }
-        /* Reset the buffer pointer to point to the end of the current line */
 
-        *buffer_ptr = &current_terminal->current_shell->current_line_input->line[current_terminal->current_shell->current_line_input->line_length];
+        /* Reset the buffer pointer to point to the end of the current line */
+        *buffer_ptr = &shell_ptr->current_line_input->line[shell_ptr->current_line_input->line_length];
     }
 }
 
@@ -43,14 +60,14 @@ static void arrow_up(Terminal *current_terminal, char **buffer_ptr)
 {
     int i;
 
-    /* This should be a one shot thingy */
+    /* Even if the user hasn't edited it's line yet, we should save it  */
     if (strcmp(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF") == 0) {
         history_line_cpy(current_terminal->current_shell->current_line_input, current_terminal->current_shell->old_line_input);
-        /* Backup up the user input in case he changes his mind later on */
     }
 
     cycle_history_up(current_terminal->current_shell->history, current_terminal->current_shell->current_line_input);
 
+    /* Clear from the cursor to the end of the screen */
     clear_from_cursor(current_terminal->beginning_cursor, current_terminal->current_cursor);
     
     /* The history contains the commands with the \n character, therefore we have to print the command without it */

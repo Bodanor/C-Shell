@@ -61,7 +61,8 @@ void add_to_history(history_t *history, history_line_t *line_to_add)
         shift_history(history);
     }
     history->history_lines[history->number_lines++] = line_to_add;
-    history->index = history->number_lines - 1;
+    /* The index should always initially be out of bounds */
+    history->index++;
 }
 int read_one_line_history(FILE *history_fd, history_t *history)
 {
@@ -151,15 +152,18 @@ int add_command_to_history(history_t **history, history_line_t *command)
 
 void cycle_history_up(history_t *history,history_line_t *replace)
 {
-    history_line_cpy(history->history_lines[history->index], replace);
-    if (history->index != 0)
+    if (history->index != 0){
         history->index--;
+    }
+    history_line_cpy(history->history_lines[history->index], replace);
+
 }
 
 void cycle_history_down(history_t *history, history_line_t *replace)
 {
     if (history->index < history->number_lines)
         history->index++;
+
     history_line_cpy(history->history_lines[history->index], replace);
     
 }
@@ -169,4 +173,12 @@ void history_line_cpy(history_line_t *src, history_line_t *dst)
     memset(dst->line, 0, dst->line_length);
     strncpy(dst->line, src->line, src->line_length);
     dst->line_length = src->line_length;
+}
+
+int check_index_out_of_bounds(history_t *history)
+{
+    if (history->index == history->number_lines)
+        return 0;
+    else
+        return 1;
 }
