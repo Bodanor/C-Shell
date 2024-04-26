@@ -5,7 +5,6 @@
 #include <string.h>
 
 static int read_one_line_history(FILE *history_fd, history_t *history);
-static void destroy_line(history_line_t *line);
 static history_t *create_history();
 
 void shift_history(history_t *history)
@@ -42,10 +41,17 @@ static history_t *create_history()
 
 }
 
-static void destroy_line(history_line_t *line)
+void destroy_line(history_line_t **line)
 {
-    free(line->line);
-    free(line);
+    if (*line != NULL){
+        if ((*line)->line != NULL){
+            free((*line)->line);
+            (*line)->line = NULL;
+        }
+        free(*line);
+        *line = NULL;
+    }
+
 
 }
 void print_history(history_t *history)
@@ -129,14 +135,16 @@ history_line_t * create_history_line(void)
 
 }
 
-void destroy_history(history_t *history)
+void destroy_history(history_t **history)
 {
     int i;
-    for (i = 0; i < history->number_lines; i++)
-        destroy_line(history->history_lines[i]);
+    for (i = 0; i < (*history)->number_lines; i++)
+        destroy_line(&(*history)->history_lines[i]);
 
-    free(history->history_lines);
-    free(history);
+    free((*history)->history_lines);
+    (*history)->history_lines = NULL;
+    free(*history);
+    *history = NULL;
 }
 int add_command_to_history(history_t **history, history_line_t *command)
 {

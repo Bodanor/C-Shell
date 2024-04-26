@@ -15,5 +15,5 @@ typedef struct canonical_t {
 TerminalCanonical *save_current_canonical_mode(void);
 void disable_canonical_mode(TerminalCanonical *current_canonical);
 void restore_initial_mode(TerminalCanonical *current_canonical);
-void destroy_canonical(TerminalCanonical *current_canonical);
+void destroy_canonical(TerminalCanonical **current_canonical);
 #endif

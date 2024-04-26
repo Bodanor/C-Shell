@@ -22,5 +22,5 @@ typedef struct terminal_t {
 
 //void update_window_size(Terminal *terminal_window);
 Terminal *init_terminal(void);
-void destroy_terminal(Terminal *current_terminal);
+void destroy_terminal(Terminal **current_terminal);
 #endif

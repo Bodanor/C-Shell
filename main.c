@@ -14,6 +14,5 @@ int main()
         
     }
     restore_initial_mode(current_terminal->term_canonical);
-    destroy_terminal(current_terminal);
-
+    destroy_terminal(&current_terminal);
 }

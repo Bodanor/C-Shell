@@ -23,3 +23,12 @@ void get_terminal_window_size(term_window_t *term_window)
     term_window->max_columns = temp.ws_col;
     term_window->max_rows = temp.ws_row;
 }
+
+void destroy_window_size(term_window_t **window_size)
+{
+    if(*window_size != NULL) {
+        free(*window_size);
+        *window_size = NULL;
+    }
+
+}

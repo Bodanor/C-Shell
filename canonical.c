@@ -50,8 +50,10 @@ void restore_initial_mode(TerminalCanonical *current_canonical)
     tcsetattr(STDIN_FILENO, TCSANOW, &current_canonical->initial_saved_can_prop);
 }
 
-void destroy_canonical(TerminalCanonical *current_canonical)
+void destroy_canonical(TerminalCanonical **current_canonical)
 {
-    if (current_canonical != NULL)
-        free(current_canonical);
+    if (*current_canonical != NULL){
+        free(*current_canonical);
+        *current_canonical = NULL;
+    }
 }

@@ -234,59 +234,16 @@ int read_input(Terminal *current_terminal)
         }
     };
 
-//
-//    while(current_input->input_length < ARG_MAX -1 && (current_byte = getchar()) != '\r') {
-//        /* Put getchar here, so that loop doesnt break when buffer is full */
-//        switch(current_byte)
-//        {
-//            /* Send by SIGWINCH AKA EOF */
-//            case -1:
-//                break;
-//            /* Handle arrow keys */
-//            case 27:
-//                handle_arrow_keys(current_terminal, current_input, &buffer_ptr);
-//                break;
-//            /* On some terminals, the backspace is translated to 8 or 127 */        
-//            case 8:
-//            case 127:
-//                if (current_input->input_length > 0  && buffer_ptr-current_input->current_input != 0) {
-//                    delete_char_on_screen(current_terminal, current_input, &buffer_ptr);
-//                }
-//                break;
-//
-//                /* If no processing needed, we copy the character entered
-//                 * and increment the buffer pointer
-//                 */
-//
-//            default:
-//
-//                /* If we insert a character somewhere other than at the end of the
-//                 * current line, we have to decay the line from the cursor to cursor + 1
-//                 * to make room for the be insterted character, or else we overwritte !!
-//                 */
-//
-//                if (buffer_ptr - current_input->current_input != current_input->input_length) {
-//                    strncpy(buffer_ptr +1, buffer_ptr, current_input->input_length - (buffer_ptr-current_input->current_input));
-//
-//                }
-//                else {
-//                    put_char_on_screen(current_terminal, current_byte);
-//                }
-//                *buffer_ptr++ = current_byte;
-//                current_input->input_length++;
-//                break;
-//
-//        }
-//    };
-//
-//    /* When the user has finished intering its input, we print a newline,
-//     * and add a null terminator to its input
-//     */
-//
-//    putchar('\n');
-//    current_input->current_input[current_input->input_length + 1] = '\0';
-//    return 0;
-return 0;
+    /* When the user has finished intering its input, we print a newline,
+     * and add a null terminator to its input
+    */
+
+    putchar('\n');
+    current_terminal->current_shell->current_line_input->line[current_terminal->current_shell->current_line_input->line_length + 1] = '\0';
+
+    /* Don't forget to free the backup line when finished */
+    destroy_line(&current_terminal->current_shell->old_line_input);
+    return 0;
     
 }
 

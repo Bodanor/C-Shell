@@ -20,7 +20,7 @@ typedef struct history_s{
 
 int load_history(history_t **history);
 history_line_t * create_history_line(void);
-void destroy_history(history_t *history);
+void destroy_history(history_t **history);
 void cycle_history_up(history_t *history, history_line_t *replace);
 void cycle_history_down(history_t *history, history_line_t *replace);
 void shift_history(history_t *history);
@@ -28,5 +28,5 @@ void print_history(history_t *history);
 void add_to_history(history_t *history, history_line_t *line_to_add);
 void history_line_cpy(history_line_t *src, history_line_t *dst);
 int check_index_out_of_bounds(history_t *history);
-
+void destroy_line(history_line_t **line);
 #endif

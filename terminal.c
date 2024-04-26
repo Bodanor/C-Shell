@@ -1,6 +1,13 @@
 #include "terminal.h"
 #include "cursor.h"
-#include "history.h"
+#include "terminal_window.h"
+
+
+/* Something seems of when resizing the terminal and cycling through the
+ * history at the same time
+*/
+
+
 
 Terminal *terminal_window_signal_ptr = NULL;
 
@@ -70,13 +77,22 @@ Terminal *init_terminal(void)
     return current_terminal;
 
 }
-void destroy_terminal(Terminal *current_terminal)
+void destroy_terminal(Terminal **current_terminal)
 {
-    if (current_terminal != NULL) {
-        destroy_cursor(current_terminal->current_cursor);
-        destroy_canonical(current_terminal->term_canonical);
-        free(current_terminal);
+    if (*current_terminal != NULL) {
+
+        /* Destroy the cursors */
+        destroy_cursor(&(*current_terminal)->current_cursor);
+        destroy_cursor(&(*current_terminal)->beginning_cursor);
+
+        destroy_canonical(&(*current_terminal)->term_canonical);
+        destroy_shell(&(*current_terminal)->current_shell);
+        destroy_window_size(&(*current_terminal)->current_window);
+
+        free(*current_terminal);
+        *current_terminal = NULL;
     }
+
 }
 
 

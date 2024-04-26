@@ -103,10 +103,12 @@ void decrement_cursor(term_window_t *terminal_window, Cursor *cursor)
     set_cursor_pos(cursor, cursor->current_x, cursor->current_y);
 }
 
-void destroy_cursor(Cursor *cursor)
+void destroy_cursor(Cursor **cursor)
 {
-    if (cursor != NULL)
-        free(cursor);
+    if (*cursor != NULL){
+        free(*cursor);
+        *cursor = NULL;
+    }
 }
 static void update_tty_cursor(Cursor *cursor)
 {
