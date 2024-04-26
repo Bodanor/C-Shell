@@ -22,7 +22,7 @@ static void arrow_down(Terminal *current_terminal, char **buffer_ptr)
     /* Check that user has not began to input any commands before cycling into the history
      * Check also that the index is not out of bounds, else we ignore the user history cycling
     */
-    if (strcmp(shell_ptr->old_line_input->line, "0XDEADBEEF") != 0 && check_index_out_of_bounds(shell_ptr->history) != 0) {
+    if (check_index_out_of_bounds(shell_ptr->history) != 0) {
 
         /* If the user has edited it's line and wants to get back it's changes
          * we shall verify that we are at the end of the history
@@ -60,8 +60,11 @@ static void arrow_up(Terminal *current_terminal, char **buffer_ptr)
 {
     int i;
 
-    /* Even if the user hasn't edited it's line yet, we should save it  */
-    if (strcmp(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF") == 0) {
+    /* Every time the user changes from it's input to one of the history,
+     * we shall save it's input to reflect the changes
+    */
+
+    if (check_index_out_of_bounds(current_terminal->current_shell->history) == 0) {
         history_line_cpy(current_terminal->current_shell->current_line_input, current_terminal->current_shell->old_line_input);
     }
 
@@ -172,8 +175,6 @@ int read_input(Terminal *current_terminal)
     if (current_terminal->current_shell->old_line_input == NULL)
         return -1;
 
-    strcpy(current_terminal->current_shell->old_line_input->line, "0XDEADBEEF");
-    current_terminal->current_shell->old_line_input->line_length =11;
     /* We are using a buffer pointer because the user can edit the line it is 
      * currently writting (going back, going forward,..)
      *
