@@ -64,4 +64,9 @@ void shell_prompt(env_t *env)
 
     printf(" $ ");
 
+    /* Really important as we immediately reenable canonical mode right after
+     * this function call
+    */ 
+    fflush(stdout);
+
 }

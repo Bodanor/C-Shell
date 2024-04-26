@@ -3,6 +3,7 @@
 #include "history.h"
 #include "shell.h"
 #include "terminal.h"
+#include <stdio.h>
 
 static void handle_arrow_keys(Terminal *current_terminal,char **buffer_ptr);
 static void delete_char_on_screen(Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr);
@@ -164,7 +165,12 @@ int read_input(Terminal *current_terminal)
     char *line_ptr;
     unsigned int current_byte;
     
+
+    /* THIS SHOULD GO INSIDE A FUNCTION LIKE RESET_SHELL-INPUT WHATEVER */
+
     /* Initialize the input and it's backup */    
+    update_cursor_pos(current_terminal->beginning_cursor);
+    update_cursor_pos(current_terminal->current_cursor);
 
     /* THIS SHOULD GO INSIDE A FUNCTION LIKE RESET_SHELL-INPUT WHATEVER */
     current_terminal->current_shell->current_line_input = create_history_line();
