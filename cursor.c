@@ -69,35 +69,25 @@ void set_cursor_pos(Cursor *cursor, int x, int y)
 void increment_cursor(term_window_t *terminal_window, Cursor *cursor)
 {
     if (cursor->current_x == terminal_window->max_columns){
-        if (cursor->current_y == terminal_window->max_rows) {
-            cursor->current_x = 0;
-            cursor->current_y = 0;
-        }
-        else {
-            /* If the cursor is at the end of the max columns and not at the end of
-             * the maximum rows possible, then go to the next row and start from x = 033
-             */
-            cursor->current_x = 0;
-            cursor->current_y += 1;
+            cursor->current_x = 1;
+            cursor->current_y ++;
             set_cursor_pos(cursor, cursor->current_x, cursor->current_y);
-        }
     }
-    else {
-        /* Else just increment the cursor safely */
-        cursor->current_x += 1;
+    else{
+        cursor->current_x++;
     }
 }
 void decrement_cursor(term_window_t *terminal_window, Cursor *cursor)
 {
-    /* If the cursor is the beggining of a row and there is still a row 
+    /* If the cursor is at the beggining of a row and there is still a row 
      * available above, place the cursor at the end of the row */
-    if (cursor->current_x == 0 && cursor->current_y != 0){
+    if (cursor->current_x == 1 && cursor->current_y != 0){
         cursor->current_x = terminal_window->max_columns;
-        cursor->current_y -=1;
+        cursor->current_y --;
     }
     /* Else we simply decrement the cursor */
-    else if (cursor->current_x != 0){
-        cursor->current_x -=1;
+    else {
+        cursor->current_x --;
     }
     /* We always have to update the cursor manually to the screen */
     set_cursor_pos(cursor, cursor->current_x, cursor->current_y);

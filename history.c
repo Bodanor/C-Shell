@@ -86,10 +86,17 @@ int read_one_line_history(FILE *history_fd, history_t *history)
         free(current_line);
         return -1;
     }
+
+    /* We don't want to deal with newline inside the history, so strip it when needed */
+    if (current_line->line[current_line->line_length - 1] == '\n'){
+        current_line->line[current_line->line_length - 1] = '\0';
+        current_line->line_length--;
+    }
     
-    current_line->line = (char*)realloc(current_line->line, sizeof(char)*(current_line->line_length + 1));
-    if (current_line->line == NULL)
-        return -1;
+    // /* Realloc because */
+    // current_line->line = (char*)realloc(current_line->line, sizeof(char)*(current_line->line_length + 1));
+    // if (current_line->line == NULL)
+    //     return -1;
 
     add_to_history(history, current_line);
 

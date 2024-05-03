@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+
 typedef struct term_window_s {
     int max_rows;
     int max_columns;

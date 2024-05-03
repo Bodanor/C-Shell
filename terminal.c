@@ -92,6 +92,6 @@ void destroy_terminal(Terminal **current_terminal)
 
 void put_char_on_screen(Terminal *current_terminal, const unsigned int c)
 {
-        putchar(c);
-        increment_cursor(current_terminal->current_window, current_terminal->current_cursor); 
+    putchar(c);
+    increment_cursor(current_terminal->current_window, current_terminal->current_cursor); 
 }

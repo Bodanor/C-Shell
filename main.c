@@ -11,22 +11,22 @@
 int main()
 {
     shell_t *shell;
-    Terminal *current_terminal;
+    Terminal *term_window;
 
     shell = init_shell();
     if (shell == NULL) {
         return -1;
     }
-    current_terminal = init_terminal();
-    if (current_terminal == NULL)
+    term_window = init_terminal();
+    if (term_window == NULL)
         return -1;
     
 
     shell_prompt(shell);
     
-    if (read_input(shell, current_terminal) != -1) {
+    if (read_input(shell, term_window) != -1) {
         
     }
+    printf("%s", shell->current_line_input->line);
     restore_initial_mode(shell->term_canonical);
-    destroy_terminal(&current_terminal);
 }

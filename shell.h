@@ -9,7 +9,6 @@
 #include "util.h"
 #include "canonical.h"
 #include "cursor.h"
-#include "terminal.h"
 
 typedef struct shell_s {
     history_t *history;

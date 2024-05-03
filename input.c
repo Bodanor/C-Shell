@@ -1,16 +1,14 @@
 #include "input.h"
 
 static void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr);
-static void delete_char_on_screen(Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr);
+static void delete_char_on_screen(Cursor *begin_cursor, Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr);
 static void arrow_up(shell_t *shell, Terminal *term_window, char **buffer_ptr);
 static void arrow_down(shell_t *shell, Terminal *term_window, char **buffer_ptr);
 
 static void arrow_down(shell_t *shell, Terminal *term_window, char **buffer_ptr)
 {
     int i;
-    int line_length;
     
-
     /* Check that user has not began to input any commands before cycling into the history
      * Check also that the index is not out of bounds, else we ignore the user history cycling
     */
@@ -30,16 +28,10 @@ static void arrow_down(shell_t *shell, Terminal *term_window, char **buffer_ptr)
 
         /* Clear from the cursor to the end of the screen */
         clear_from_cursor(shell->beginning_cursor);
-        
-       /* The history contains the newline character but the user input does not
-        * Therefore, we have to know if we are pulling from the history or the 
-        * previously saved user input.
-       */  
-        line_length = (check_index_out_of_bounds(shell->history)) ? shell->current_line_input->line_length -1 : shell->current_line_input->line_length;
 
-        /* The history contains the commands with the \n character, therefore we have to print the command without it */
-        for (i = 0; i < line_length; i++){
-            put_char_on_screen(term_window, shell->current_line_input->line[i]);
+
+        for (i = 0; i < shell->current_line_input->line_length; i++){
+            putchar(shell->current_line_input->line[i]);
         }
 
         /* Reset the buffer pointer to point to the end of the current line */
@@ -64,9 +56,9 @@ static void arrow_up(shell_t *shell, Terminal *term_window, char **buffer_ptr)
     /* Clear from the cursor to the end of the screen */
     clear_from_cursor(shell->beginning_cursor);
     
-    /* The history contains the commands with the \n character, therefore we have to print the command without it */
-    for (i = 0; i < shell->current_line_input->line_length -1; i++){
-        put_char_on_screen(term_window, shell->current_line_input->line[i]);
+    
+    for (i = 0; i < shell->current_line_input->line_length; i++){
+        putchar(shell->current_line_input->line[i]);
     }
     /* Reset the buffer pointer to point to the end of the current line */
     *buffer_ptr = &shell->current_line_input->line[shell->current_line_input->line_length];
@@ -96,9 +88,8 @@ void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr)
             
             if (*buffer_ptr - current_line->line < current_line->line_length) {
                 (*buffer_ptr)++;
-                /* Increment cursor */
                 printf("%s", arrow);
-                increment_cursor(term_window->current_window, term_window->current_cursor);
+               
             }
 
             break;
@@ -108,9 +99,8 @@ void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr)
              * line */
             if (*buffer_ptr - current_line->line != 0 && current_line->line_length > 0) {
                 (*buffer_ptr)--;
-                printf("%s", arrow);
-                /* Decrement cursor position */
                 decrement_cursor(term_window->current_window, term_window->current_cursor);
+                
             }
 
             break;
@@ -130,18 +120,22 @@ void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr)
 
 }
 
-static void delete_char_on_screen(Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr)
+static void delete_char_on_screen(Cursor *begin_cursor, Terminal *term_window, history_line_t *current_line, char **buffer_ptr)
 {
-    decrement_cursor(current_terminal->current_window, current_terminal->current_cursor);
-    printf("\033[0J"); /* Erase the entire screen*/
+    
+    decrement_cursor(term_window->current_window, term_window->current_cursor); /* Decrement from the currrent cursor by 1 */
+
+    printf("\033[0J"); /* Erase from the cursor till the end of the screen */
     
     /* Reflect changes inside the buffer */
     strncpy((*buffer_ptr)-1, *buffer_ptr , current_line->line_length - (*buffer_ptr-current_line->line-1));
-    (*buffer_ptr) --;
+    (*buffer_ptr)--;
+
+    /* Print what is missing from the cursor till the end of the current line */
     printf("%.*s", (int)(current_line->line_length  - (*buffer_ptr - current_line->line)), *buffer_ptr); 
 
     (current_line->line_length)--;
-    flush_cursor(current_terminal->current_cursor);
+
 }
 
 int read_input(shell_t *shell, Terminal *term_window)
@@ -170,6 +164,7 @@ int read_input(shell_t *shell, Terminal *term_window)
 
     /* Save the beginning of the cursor, so that redraw becomes easier when needed */    
     update_cursor_pos(shell->beginning_cursor);
+    update_cursor_pos(term_window->current_cursor);
 
 
     
@@ -191,7 +186,7 @@ int read_input(shell_t *shell, Terminal *term_window)
             case 8:
             case 127:
                 if (shell->current_line_input->line_length > 0  && line_ptr - shell->current_line_input->line != 0) {
-                    delete_char_on_screen(term_window, shell->current_line_input, &line_ptr);
+                    delete_char_on_screen(shell->beginning_cursor, term_window, shell->current_line_input, &line_ptr);
                 }
                 break;
 
@@ -212,11 +207,11 @@ int read_input(shell_t *shell, Terminal *term_window)
                 }
                 else {
                     put_char_on_screen(term_window, current_byte);
+
                 }
                 *line_ptr++ = current_byte;
                 shell->current_line_input->line_length++;
                 break;
-
         }
     };
 
