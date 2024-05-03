@@ -1,5 +1,4 @@
 #include "env.h"
-#include <stdlib.h>
 
 env_t *init_env(void)
 {
@@ -36,9 +35,9 @@ env_t *init_env(void)
     temp->home_dir = (char*)malloc(sizeof(char)*strlen(pwd->pw_dir) + 1);
     if (temp->home_dir == NULL) {
         fprintf(stderr, "FATAL : malloc error\n");
+        free(temp->user);
         free(temp);
         free(pwd);
-        free(temp->user);
         return NULL;
     }
     strcpy(temp->home_dir, pwd->pw_dir);
@@ -47,10 +46,10 @@ env_t *init_env(void)
     temp->curr_wd = getcwd(NULL, 0);
     if (temp->curr_wd == NULL) {
         fprintf(stderr, "FATAL : Failed to retrieve current working directory !\n");
-        free(temp);
-        free(pwd);
         free(temp->user);
         free(temp->home_dir);
+        free(temp);
+        free(pwd);
         return NULL;
     }
     
@@ -58,21 +57,21 @@ env_t *init_env(void)
     temp->hostname = (char*)malloc(sizeof(char)*HOST_NAME_MAX + 1);
     if (temp->hostname == NULL) {
         fprintf(stderr, "FATAL : malloc error\n");
-        free(temp);
-        free(pwd);
         free(temp->user);
         free(temp->home_dir);
         free(temp->curr_wd);
+        free(temp);
+        free(pwd);
         return NULL;
     }
     if (gethostname(temp->hostname, HOST_NAME_MAX + 1) != 0) {
         fprintf(stderr, "FATAL : Failed to retrieve the hostname !");
-        free(temp);
-        free(pwd);
         free(temp->user);
         free(temp->home_dir);
         free(temp->curr_wd);
         free(temp->hostname);
+        free(temp);
+        free(pwd);
         return NULL;
     }
 

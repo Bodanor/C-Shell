@@ -1,8 +1,4 @@
 #include "canonical.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <termios.h>
-
 
 TerminalCanonical *save_current_canonical_mode(void)
 {
@@ -42,7 +38,12 @@ void disable_canonical_mode(TerminalCanonical *current_canonical)
     
     /* Apply changes only if all output as been written to files */
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &current_canonical->current_can_prop);
-    setvbuf(stdin, NULL, _IONBF, 0);
+
+    /* This will become handy, as the I/O is directly available
+     * Thus, we don't need to keep track of the cursor ourselfs 
+    */
+    setvbuf(stdin, NULL, _IONBF, (size_t) 0);
+    setvbuf(stdout, NULL, _IONBF, (size_t) 0);
 
 }
 void restore_initial_mode(TerminalCanonical *current_canonical)

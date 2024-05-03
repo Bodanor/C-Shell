@@ -1,5 +1,4 @@
 #include "terminal_window.h"
-#include <stdlib.h>
 
 
 term_window_t *init_window_size(void)

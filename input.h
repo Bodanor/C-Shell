@@ -8,7 +8,8 @@
 
 #include "terminal.h"
 #include "history.h"
+#include "shell.h"
 
-int read_input(Terminal *current_terminal);
+int read_input(shell_t *shell, Terminal *term_window);
 
 #endif

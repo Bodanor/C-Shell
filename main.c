@@ -10,14 +10,23 @@
 
 int main()
 {
-    Terminal *current_terminal= init_terminal();
+    shell_t *shell;
+    Terminal *current_terminal;
+
+    shell = init_shell();
+    if (shell == NULL) {
+        return -1;
+    }
+    current_terminal = init_terminal();
+    if (current_terminal == NULL)
+        return -1;
     
-    restore_initial_mode(current_terminal->term_canonical);
-    shell_prompt(current_terminal->current_shell->env);
-    disable_canonical_mode(current_terminal->term_canonical);
-    if (read_input(current_terminal) != -1) {
+
+    shell_prompt(shell);
+    
+    if (read_input(shell, current_terminal) != -1) {
         
     }
-    restore_initial_mode(current_terminal->term_canonical);
+    restore_initial_mode(shell->term_canonical);
     destroy_terminal(&current_terminal);
 }

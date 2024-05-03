@@ -1,7 +1,4 @@
 #include "shell.h"
-#include "env.h"
-#include <stdio.h>
-#include <string.h>
 
 shell_t *init_shell(void)
 {
@@ -11,13 +8,20 @@ shell_t *init_shell(void)
     if (temp == NULL)
         return NULL;
     
+    temp->current_line_input = NULL;
+    temp->old_line_input = NULL;
+
     if (load_history(&temp->history) == -1)
         temp->history = NULL;
     
-    temp->current_line_input = NULL; 
     temp->env = init_env();
     if (temp->env == NULL)
         return NULL;
+    
+    temp->term_canonical = save_current_canonical_mode();
+    disable_canonical_mode(temp->term_canonical);
+    temp->beginning_cursor = init_cursor();
+
     return temp; 
 
 }
@@ -38,35 +42,31 @@ void destroy_shell(shell_t **shell)
        *shell = NULL;
     }
 }
-void shell_prompt(env_t *env)
+void shell_prompt(shell_t *shell)
 {
     char *trimmed_pwd;
 
     trimmed_pwd = NULL;
 
-    printf("%s", env->user);
+    printf("%s", shell->env->user);
     putchar('@');
-    printf("%s", env->hostname);
+    printf("%s", shell->env->hostname);
     putchar(':');
 
     /* If we are at the home directory */
-    if (strcmp(env->curr_wd, env->home_dir) == 0)
+    if (strcmp(shell->env->curr_wd, shell->env->home_dir) == 0)
         putchar('~');
     
     /* If we are at a relative path from the home directory */
-    else if ((trimmed_pwd = trim_str(env->curr_wd, env->home_dir)) != NULL) {
+    else if ((trimmed_pwd = trim_str(shell->env->curr_wd, shell->env->home_dir)) != NULL) {
         putchar('~');
         printf("%s", trimmed_pwd);
     }
     else {
-        printf("%s", env->curr_wd);
+        printf("%s", shell->env->curr_wd);
     }
 
     printf(" $ ");
-
-    /* Really important as we immediately reenable canonical mode right after
-     * this function call
-    */ 
-    fflush(stdout);
+    
 
 }

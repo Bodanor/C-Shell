@@ -18,6 +18,6 @@ void increment_cursor(term_window_t *terminal_window, Cursor *cursor);
 void decrement_cursor(term_window_t *terminal_window, Cursor *cursor);
 void flush_cursor(Cursor *cursor);
 Cursor *init_cursor(void);
-void clear_from_cursor(Cursor *beginning_cursor, Cursor *current_cursor);
+void clear_from_cursor(Cursor *beginning_cursor);
 void destroy_cursor(Cursor **cursor);
 #endif

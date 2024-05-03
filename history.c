@@ -10,7 +10,7 @@ static history_t *create_history();
 void shift_history(history_t *history)
 {
     history_line_t *top_line;
-    int i;
+    unsigned int i;
 
     top_line = history->history_lines[0];
     history->index--;
@@ -99,7 +99,6 @@ int read_one_line_history(FILE *history_fd, history_t *history)
  int load_history(history_t **history)
 {
     FILE *history_fd;
-    int c;
     history_t *temp_history;
 
     temp_history = create_history();
@@ -137,7 +136,7 @@ history_line_t * create_history_line(void)
 
 void destroy_history(history_t **history)
 {
-    int i;
+    unsigned int i;
     for (i = 0; i < (*history)->number_lines; i++)
         destroy_line(&(*history)->history_lines[i]);
 

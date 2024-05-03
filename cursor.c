@@ -120,10 +120,8 @@ void flush_cursor(Cursor *cursor)
     update_tty_cursor(cursor);
 
 }
-void clear_from_cursor(Cursor *beginning_cursor, Cursor *current_cursor)
+void clear_from_cursor(Cursor *beginning_cursor)
 {
     update_tty_cursor(beginning_cursor);
     printf("\033[0J");
-    current_cursor->current_x = beginning_cursor->current_x;
-    current_cursor->current_y = beginning_cursor->current_y;
 }
