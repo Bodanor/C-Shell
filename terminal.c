@@ -22,29 +22,7 @@
 //     for(i = 0; i < current_input->line_length; i++)
 //         putchar(current_input->line[i]);
 // }
-// void window_resize_handler(int signum)
-// {
 
-//    update_cursor_pos(terminal_window_signal_ptr->current_cursor);
-//    redraw_input(terminal_window_signal_ptr->current_shell->current_line_input);
-
-// }
-
-// static void set_signal_handlers(void)
-// {
-//     /* We don't want to be interrupted by anything except for SIGWINCH */
-//     struct sigaction action;
-//     sigset_t signal_set;
-
-//     action.sa_handler = &window_resize_handler;
-//     sigemptyset(&action.sa_mask);
-//     action.sa_flags = 0;
-//     sigaction(SIGWINCH, &action, NULL);
-    
-//     sigfillset(&signal_set);
-//     sigdelset(&signal_set, SIGWINCH);
-//     sigprocmask(SIG_SETMASK, &signal_set, NULL);
-// }
 
 
 
