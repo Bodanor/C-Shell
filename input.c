@@ -1,4 +1,5 @@
 #include "input.h"
+#include "cursor.h"
 
 static void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr);
 static void delete_char_on_screen(Cursor *begin_cursor, Terminal *current_terminal, history_line_t *current_line, char **buffer_ptr);
@@ -88,8 +89,7 @@ void handle_arrow_keys(shell_t *shell, Terminal *term_window, char **buffer_ptr)
             
             if (*buffer_ptr - current_line->line < current_line->line_length) {
                 (*buffer_ptr)++;
-                printf("%s", arrow);
-               
+                increment_cursor(term_window->current_window, term_window->current_cursor);
             }
 
             break;
@@ -135,6 +135,7 @@ static void delete_char_on_screen(Cursor *begin_cursor, Terminal *term_window, h
     printf("%.*s", (int)(current_line->line_length  - (*buffer_ptr - current_line->line)), *buffer_ptr); 
 
     (current_line->line_length)--;
+    flush_cursor(term_window->current_cursor);
 
 }
 

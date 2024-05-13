@@ -76,6 +76,7 @@ void increment_cursor(term_window_t *terminal_window, Cursor *cursor)
     else{
         cursor->current_x++;
     }
+    set_cursor_pos(cursor, cursor->current_x, cursor->current_y);
 }
 void decrement_cursor(term_window_t *terminal_window, Cursor *cursor)
 {
