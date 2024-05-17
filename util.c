@@ -31,3 +31,19 @@ char *trim_str(char *src, char *substring)
     }
 
 }
+
+void insert_byte(char *position, int byte, int n)
+{
+    int i;
+    int to_be_inserted;
+    int save_byte;
+
+    to_be_inserted = byte;
+    save_byte = *position;
+
+    for (i = 0; i < n + 1; i++) {
+        position[i] = to_be_inserted;
+        to_be_inserted = save_byte;
+        save_byte = position[i + 1];
+    }
+}

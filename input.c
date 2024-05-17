@@ -7,6 +7,7 @@
 #include "input.h"
 #include "cursor.h"
 #include "terminal.h"
+#include "util.h"
 
 static char *input_ptr; /* This is the actual current input pointer*/
 static Cursor *beginning_cursor; /* This stores the beginning of the cursor */
@@ -209,20 +210,15 @@ history_line_t *read_input(shell_t *shell)
 
             default:
 
-                /* If we insert a character somewhere other than at the end of the
-                 * current line, we have to decay the line from the cursor to cursor + 1
-                 * to make room for the be insterted character, or else we overwritte !!
-                 */
-
                 if (input_ptr - current_line_input->line != current_line_input->line_length) {
-                    strncpy(input_ptr +1, input_ptr, current_line_input->line_length - (input_ptr - current_line_input->line));
-
+                    insert_byte(input_ptr, current_byte, current_line_input->line_length - (input_ptr - current_line_input->line));
+                    /* Reflect the changes */
                 }
                 else {
                     put_char_on_screen(current_byte);
-
+                    *input_ptr++ = current_byte;
                 }
-                *input_ptr++ = current_byte;
+
                 current_line_input->line_length++;
                 break;
         }
