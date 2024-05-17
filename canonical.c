@@ -17,7 +17,7 @@ TerminalCanonical *save_current_canonical_mode(void)
 
     return current_canonical;
 }
-void disable_canonical_mode(TerminalCanonical *current_canonical)
+void disable_canonical_mode(TerminalCanonical *canonical)
 {
     /* We first detect if the current terminal is a tty, if not we shall abord
      * ASAP
@@ -33,11 +33,11 @@ void disable_canonical_mode(TerminalCanonical *current_canonical)
      * when a newline as written to stdout
      */
 
-    cfmakeraw(&current_canonical->current_can_prop);
-    current_canonical->current_can_prop.c_oflag |= (ONLCR | OPOST);
+    cfmakeraw(&canonical->current_can_prop);
+    canonical->current_can_prop.c_oflag |= (ONLCR | OPOST);
     
     /* Apply changes only if all output as been written to files */
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &current_canonical->current_can_prop);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &canonical->current_can_prop);
 
     /* This will become handy, as the I/O is directly available
      * Thus, we don't need to keep track of the cursor ourselfs 
@@ -46,9 +46,9 @@ void disable_canonical_mode(TerminalCanonical *current_canonical)
     setvbuf(stdout, NULL, _IONBF, (size_t) 0);
 
 }
-void restore_initial_mode(TerminalCanonical *current_canonical)
+void restore_initial_mode(TerminalCanonical *canonical)
 {
-    tcsetattr(STDIN_FILENO, TCSANOW, &current_canonical->initial_saved_can_prop);
+    tcsetattr(STDIN_FILENO, TCSANOW, &canonical->initial_saved_can_prop);
 }
 
 void destroy_canonical(TerminalCanonical **current_canonical)

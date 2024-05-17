@@ -11,5 +11,5 @@
 #include "terminal.h"
 
 int read_input(shell_t *shell, Terminal *term_window);
-
+void redraw(void);
 #endif

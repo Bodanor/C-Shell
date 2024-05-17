@@ -228,4 +228,7 @@ int read_input(shell_t *shell, Terminal *term_window)
     return 0;
     
 }
+void redraw()
+{
 
+}

@@ -1,75 +1,64 @@
 #include "terminal.h"
 #include "cursor.h"
+#include "input.h"
 #include "terminal_window.h"
 
+/* This should be a global variable */
+Terminal *term_window;
 
-/* Something seems of when resizing the terminal and cycling through the
- * history at the same time
-*/
-
-
-// Terminal *terminal_window_signal_ptr = NULL;
-
-// static void set_signal_handlers(void);
-// static void redraw_input(history_line_t *current_input);
-
-// static void redraw_input(history_line_t *current_input)
-// {
-//     int i;
-    
-//    clear_from_cursor(terminal_window_signal_ptr->beginning_cursor, terminal_window_signal_ptr->current_cursor); 
-
-//     for(i = 0; i < current_input->line_length; i++)
-//         putchar(current_input->line[i]);
-// }
-
-
-
-
-Terminal *init_terminal(void)
+static void window_resize_handler(int signum);
+static void window_resize_handler(int signum)
 {
-    Terminal *current_terminal;
+    update_cursor_pos(term_window->current_cursor);
+    redraw();
+}
 
-    current_terminal = (Terminal*)malloc(sizeof(Terminal));
-    if (current_terminal == NULL){
+static void set_signal_handlers(void);
+
+static void set_signal_handlers(void)
+{
+    /* We don't want to be interrupted by anything except for SIGWINCH */
+    struct sigaction action;
+    sigset_t signal_set;
+
+    action.sa_handler = &window_resize_handler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+    sigaction(SIGWINCH, &action, NULL);
+
+    sigfillset(&signal_set);
+    sigdelset(&signal_set, SIGWINCH);
+    sigprocmask(SIG_SETMASK, &signal_set, NULL);
+}
+
+void init_terminal(void)
+{
+    term_window = (Terminal*)malloc(sizeof(Terminal));
+    if (term_window == NULL){
         fprintf(stderr, "Fatal : Malloc error !\n");
         exit(EXIT_FAILURE);
     }
-    
-    // terminal_window_signal_ptr = current_terminal;
 
-
-    current_terminal->current_window = init_window_size();
-
-    current_terminal->current_cursor = init_cursor();
-    
-    // set_signal_handlers();
-
-    return current_terminal;
-
+    term_window->current_window = init_window_size();
+    term_window->current_cursor = init_cursor();
+    set_signal_handlers();
 }
-void destroy_terminal(Terminal **current_terminal)
+void destroy_terminal(void)
 {
-    if (*current_terminal != NULL) {
+    if (term_window != NULL) {
 
         /* Destroy the cursors */
-        destroy_cursor(&(*current_terminal)->current_cursor);
-        // destroy_cursor(&(*current_terminal)->beginning_cursor);
+        destroy_cursor(&term_window->current_cursor);
+        destroy_window_size(&term_window->current_window);
 
-        // destroy_canonical(&(*current_terminal)->term_canonical);
-        // destroy_shell(&(*current_terminal)->current_shell);
-        destroy_window_size(&(*current_terminal)->current_window);
-
-        free(*current_terminal);
-        *current_terminal = NULL;
+        free(term_window);
+        term_window = NULL;
     }
 
 }
 
-
-
-void put_char_on_screen(Terminal *current_terminal, const unsigned int c)
+void put_char_on_screen(const unsigned int c)
 {
     putchar(c);
-    increment_cursor(current_terminal->current_window, current_terminal->current_cursor); 
+    increment_cursor(term_window->current_window, term_window->current_cursor); 
 }
