@@ -8,12 +8,10 @@
 #include "terminal.h"
 
 
-
-
-
 int main()
 {
     shell_t *shell;
+    history_line_t *input;
 
     shell = init_shell();
     if (shell == NULL) {
@@ -23,9 +21,9 @@ int main()
 
     shell_prompt(shell);
 
-    if (read_input(shell, term_window) != -1) {
-
+    if ((input = read_input(shell) )== NULL) {
+        printf("Error !");
     }
-    printf("%s", shell->current_line_input->line);
+    printf("%s", input->line);
     restore_initial_mode(shell->term_canonical);
 }

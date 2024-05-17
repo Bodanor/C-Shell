@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "shell.h": "c",
-        "canonical.h": "c",
-        "terminal.h": "c",
-        "cursor.h": "c"
-    }
-}

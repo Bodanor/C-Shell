@@ -1,9 +1,12 @@
-#include "cursor.h"
-#include "terminal_window.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include "cursor.h"
 
 static void get_cursor_pos(Cursor *cursor);
 static void update_tty_cursor(Cursor *cursor);
+
 Cursor *init_cursor(void)
 {
     Cursor *cursor;

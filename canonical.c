@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
 #include "canonical.h"
 
 TerminalCanonical *save_current_canonical_mode(void)

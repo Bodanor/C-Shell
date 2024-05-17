@@ -1,9 +1,6 @@
 #ifndef __CURSOR_H__
 #define __CURSOR_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-
 
 #include "terminal_window.h"
 

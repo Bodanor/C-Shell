@@ -1,10 +1,6 @@
 #ifndef __HISTORY_H__
 #define __HISTORY_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <linux/limits.h>
-
 #define MAX_HISTORY_LINES 500
 
 typedef struct history_line_s{

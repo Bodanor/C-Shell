@@ -1,8 +1,9 @@
-#include "history.h"
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <linux/limits.h>
+
+#include "history.h"
 
 static int read_one_line_history(FILE *history_fd, history_t *history);
 static history_t *create_history();

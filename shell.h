@@ -12,9 +12,6 @@
 
 typedef struct shell_s {
     history_t *history;
-    history_line_t *current_line_input;
-    history_line_t *old_line_input;
-    Cursor *beginning_cursor;
     env_t *env;
     TerminalCanonical *term_canonical;
 

@@ -1,11 +1,6 @@
 #ifndef __TERMINAL_WINDOW_H__
 #define __TERMINAL_WINDOW_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-
 
 typedef struct term_window_s {
     int max_rows;

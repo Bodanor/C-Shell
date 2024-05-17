@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "shell.h"
 
 shell_t *init_shell(void)
@@ -8,8 +10,6 @@ shell_t *init_shell(void)
     if (temp == NULL)
         return NULL;
     
-    temp->current_line_input = NULL;
-    temp->old_line_input = NULL;
 
     if (load_history(&temp->history) == -1)
         temp->history = NULL;
@@ -20,7 +20,6 @@ shell_t *init_shell(void)
     
     temp->term_canonical = save_current_canonical_mode();
     disable_canonical_mode(temp->term_canonical);
-    temp->beginning_cursor = init_cursor();
 
     return temp; 
 
@@ -28,14 +27,7 @@ shell_t *init_shell(void)
 void destroy_shell(shell_t **shell)
 {
     if (*shell != NULL) {
-       if ((*shell)->current_line_input != NULL){
-           destroy_line(&(*shell)->current_line_input);
-           (*shell)->current_line_input = NULL;
-       }
-       if ((*shell)->old_line_input != NULL){
-           destroy_line(&(*shell)->old_line_input);
-           (*shell)->old_line_input = NULL;
-       }
+       
        destroy_env(&(*shell)->env);
        destroy_history(&(*shell)->history);
        free((*shell));

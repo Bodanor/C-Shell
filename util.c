@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "util.h"
 
 char *trim_str(char *src, char *substring)

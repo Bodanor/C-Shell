@@ -1,3 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <pwd.h>
+#include <limits.h>
+#include <errno.h>
+
 #include "env.h"
 
 env_t *init_env(void)

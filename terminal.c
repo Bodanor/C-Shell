@@ -1,16 +1,18 @@
-#include "terminal.h"
-#include "cursor.h"
-#include "input.h"
-#include "terminal_window.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <signal.h>
 
-/* This should be a global variable */
+#include "terminal.h"
+
+/* This will hold the terminal window size as well as the cursor position */
 Terminal *term_window;
 
 static void window_resize_handler(int signum);
 static void window_resize_handler(int signum)
 {
     update_cursor_pos(term_window->current_cursor);
-    redraw();
 }
 
 static void set_signal_handlers(void);
