@@ -142,7 +142,7 @@ static void delete_char_on_screen()
     
     /* Reflect changes inside the buffer */
     strncpy(input_ptr-1, input_ptr , current_line_input->line_length - (input_ptr- current_line_input->line-1));
-    (*input_ptr)--;
+    *input_ptr--;
 
     /* Print what is missing from the cursor till the end of the current line */
     printf("%.*s", (int)(current_line_input->line_length  - (input_ptr - current_line_input->line)), input_ptr); 
