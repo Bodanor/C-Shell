@@ -9,17 +9,40 @@
 #include "terminal.h"
 #include "util.h"
 
-static char *input_ptr; /* This is the actual current input pointer*/
-static Cursor *beginning_cursor; /* This stores the beginning of the cursor */
-static history_line_t *current_line_input;
-static history_line_t *old_line_input;
+/* This is the actual current input pointer*/
+static char *input_ptr; 
 
+/* This stores the beginning of the cursor */
+static Cursor *beginning_cursor; 
+
+/* This is the currently edited line */
+static history_line_t *current_line_input;
+
+/* This is a backup line in case the user cycles through history */
+static history_line_t *old_line_input;
 
 static void handle_arrow_keys(shell_t *shell);
 static void delete_char_on_screen(void);
 static void arrow_up(shell_t *shell);
 static void arrow_down(shell_t *shell);
 
+void redraw()
+{
+    /* We don't need to backup the cursor position as at this point it has not
+     * been increment
+     */ 
+    printf("\033[0J"); /* Erase from the cursor till the end of the screen */
+
+    /* Print what is missing from the cursor till the end of the current line */
+    printf("%.*s", (int)(current_line_input->line_length  - (input_ptr  - current_line_input->line)), input_ptr + 1); 
+    
+    /* Printf automatically makes the cursor increment itself only visually
+     * but not internally, therefore we can just flush the internal cursor 
+     * position
+     */ 
+    flush_cursor(term_window->current_cursor);
+
+}
 static void arrow_down(shell_t *shell)
 {
     int i;
@@ -143,7 +166,7 @@ static void delete_char_on_screen()
     
     /* Reflect changes inside the buffer */
     strncpy(input_ptr-1, input_ptr , current_line_input->line_length - (input_ptr- current_line_input->line-1));
-    *input_ptr--;
+    input_ptr--;
 
     /* Print what is missing from the cursor till the end of the current line */
     printf("%.*s", (int)(current_line_input->line_length  - (input_ptr - current_line_input->line)), input_ptr); 
@@ -196,29 +219,42 @@ history_line_t *read_input(shell_t *shell)
             case 27:
                 handle_arrow_keys(shell);
                 break;
-            /* On some terminals, the backspace is translated to 8 or 127 */        
+
+            /* Delete key was pressed. On some terminals, the backspace is
+             * translated to 8 or 127
+             */        
             case 8:
             case 127:
+                /* We verify that there is actually bytes to be deleted */
                 if (current_line_input->line_length > 0  && input_ptr - current_line_input->line != 0) {
                     delete_char_on_screen();
                 }
                 break;
 
-                /* If no processing needed, we copy the character entered
-                 * and increment the buffer pointer
-                 */
-
             default:
-
+                
+                /* If we are inserting a character at the middle of the user input
+                 * We should first print the new character on the screen
+                 * Then insert that character inside the buffer
+                 * redraw the input from the newly inserted character
+                 * and finally increment the pointer
+                 */  
                 if (input_ptr - current_line_input->line != current_line_input->line_length) {
+                    put_char_on_screen(current_byte);
                     insert_byte(input_ptr, current_byte, current_line_input->line_length - (input_ptr - current_line_input->line));
-                    /* Reflect the changes */
+                    redraw();
+                    input_ptr++;
                 }
                 else {
+                    /* If we are here, we insert the character at the end of the
+                     * buffer and simply copy the character and increment the
+                     * buffer pointer
+                     */ 
                     put_char_on_screen(current_byte);
                     *input_ptr++ = current_byte;
                 }
-
+                
+                /* Don't forget to increment the buffer length as well */
                 current_line_input->line_length++;
                 break;
         }

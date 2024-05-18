@@ -21,6 +21,23 @@ Cursor *init_cursor(void)
     return cursor;
 }
 
+
+Cursor *copy_cursor(Cursor *cursor_to_copy)
+{
+    Cursor *cursor;
+
+    cursor = (Cursor*)malloc(sizeof(Cursor));
+    if (cursor == NULL){
+        fprintf(stderr, "Fatal : Malloc error !\n");
+        exit(EXIT_FAILURE);
+    }
+
+    cursor->current_x = cursor_to_copy->current_x;
+    cursor->current_y = cursor_to_copy->current_y;
+
+    return cursor;
+
+}
 void update_cursor_pos(Cursor *cursor)
 {
     get_cursor_pos(cursor);

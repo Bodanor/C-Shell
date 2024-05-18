@@ -5,4 +5,5 @@
 #include "history.h"
 
 history_line_t *read_input(shell_t *shell);
+void redraw();
 #endif
