@@ -34,7 +34,7 @@ void redraw()
     printf("\033[0J"); /* Erase from the cursor till the end of the screen */
 
     /* Print what is missing from the cursor till the end of the current line */
-    printf("%.*s", (int)(current_line_input->line_length  - (input_ptr  - current_line_input->line)), input_ptr + 1); 
+    printf("%.*s", (int)(current_line_input->line_length  - (input_ptr - 1  - current_line_input->line)), input_ptr); 
     
     /* Printf automatically makes the cursor increment itself only visually
      * but not internally, therefore we can just flush the internal cursor 
@@ -242,8 +242,8 @@ history_line_t *read_input(shell_t *shell)
                 if (input_ptr - current_line_input->line != current_line_input->line_length) {
                     put_char_on_screen(current_byte);
                     insert_byte(input_ptr, current_byte, current_line_input->line_length - (input_ptr - current_line_input->line));
-                    redraw();
                     input_ptr++;
+                    redraw();
                 }
                 else {
                     /* If we are here, we insert the character at the end of the
