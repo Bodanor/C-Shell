@@ -115,15 +115,8 @@ static void arrow_down(shell_t *shell)
         else { 
             cycle_history_down(shell->history, current_line_input);
         }
-
-        /* Clear from the cursor to the end of the screen */
-        clear_from_cursor(beginning_cursor);
-
-
-        for (i = 0; i < current_line_input->line_length; i++){
-            putchar(current_line_input->line[i]);
-        }
-
+        
+        redraw();
         /* Reset the buffer pointer to point to the end of the current line */
         input_ptr = &current_line_input->line[current_line_input->line_length];
     }
@@ -142,14 +135,8 @@ static void arrow_up(shell_t *shell)
     }
 
     cycle_history_up(shell->history, current_line_input);
-
-    /* Clear from the cursor to the end of the screen */
-    clear_from_cursor(beginning_cursor);
     
-    
-    for (i = 0; i < current_line_input->line_length; i++){
-        putchar(current_line_input->line[i]);
-    }
+    redraw();
     /* Reset the buffer pointer to point to the end of the current line */
     input_ptr = &current_line_input->line[current_line_input->line_length];
 }
