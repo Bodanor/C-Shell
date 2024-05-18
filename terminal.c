@@ -5,6 +5,9 @@
 #include <signal.h>
 
 #include "terminal.h"
+#include "cursor.h"
+#include "input.h"
+#include "terminal_window.h"
 
 /* This will hold the terminal window size as well as the cursor position */
 Terminal *term_window;
@@ -12,7 +15,10 @@ Terminal *term_window;
 static void window_resize_handler(int signum);
 static void window_resize_handler(int signum)
 {
+    
+    get_terminal_window_size(term_window->current_window);
     update_cursor_pos(term_window->current_cursor);
+    redraw();
 }
 
 static void set_signal_handlers(void);

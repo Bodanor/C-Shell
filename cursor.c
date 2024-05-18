@@ -22,7 +22,7 @@ Cursor *init_cursor(void)
 }
 
 
-Cursor *copy_cursor(Cursor *cursor_to_copy)
+Cursor *dup_cursor(Cursor *cursor_to_copy)
 {
     Cursor *cursor;
 
@@ -135,4 +135,10 @@ void clear_from_cursor(Cursor *beginning_cursor)
 {
     update_tty_cursor(beginning_cursor);
     printf("\033[0J");
+}
+void copy_cursor(Cursor *src, Cursor *dest)
+{
+    dest->current_x = src->current_x;
+    dest->current_y = src->current_y;
+
 }

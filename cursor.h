@@ -15,7 +15,8 @@ void increment_cursor(term_window_t *terminal_window, Cursor *cursor);
 void decrement_cursor(term_window_t *terminal_window, Cursor *cursor);
 void flush_cursor(Cursor *cursor);
 Cursor *init_cursor(void);
-Cursor *copy_cursor(Cursor *cursor_to_copy);
+Cursor *dup_cursor(Cursor *cursor_to_copy);
+void copy_cursor(Cursor *src, Cursor *dest);
 void clear_from_cursor(Cursor *beginning_cursor);
 void destroy_cursor(Cursor **cursor);
 #endif

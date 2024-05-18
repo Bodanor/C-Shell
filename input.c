@@ -25,23 +25,75 @@ static void handle_arrow_keys(shell_t *shell);
 static void delete_char_on_screen(void);
 static void arrow_up(shell_t *shell);
 static void arrow_down(shell_t *shell);
+static void redraw_after_cursor();
+
+void redraw_after_cursor()
+{
+    Cursor *backup_cursor;
+    int i;
+    
+    /* We have to backup the cursor as put_char_on_screen increments the cursor
+     * as every character is printed
+     */ 
+    backup_cursor = dup_cursor(term_window->current_cursor);
+    
+    /* Now, we clear from the cursor position till the end of the screen */
+    clear_from_cursor(term_window->current_cursor);
+
+    for (i = 0; i < (int)(current_line_input->line_length  - (input_ptr - 1  - current_line_input->line)); i++)
+    {
+        put_char_on_screen(input_ptr[i]);
+
+    }
+    
+    /* As put_char_on_screen increments the cursor, we have to put back
+     * the cursor position back to where it was before this function call
+     */
+    flush_cursor(backup_cursor);
+    
+    /* We also need to put back the cursor position the actual terminal cursor */
+    copy_cursor(backup_cursor, term_window->current_cursor);
+    
+    /* Don't forget to free the structure */
+    destroy_cursor(&backup_cursor);
+
+}
 
 void redraw()
 {
-    /* We don't need to backup the cursor position as at this point it has not
-     * been increment
-     */ 
-    printf("\033[0J"); /* Erase from the cursor till the end of the screen */
+    Cursor *backup_cursor;
+    int i;
 
-    /* Print what is missing from the cursor till the end of the current line */
-    printf("%.*s", (int)(current_line_input->line_length  - (input_ptr - 1  - current_line_input->line)), input_ptr); 
+    /* We have to backup the cursor as put_char_on_screen increments the cursor
+     * as every character is printed
+     */ 
+
+    backup_cursor = dup_cursor(term_window->current_cursor);
     
-    /* Printf automatically makes the cursor increment itself only visually
-     * but not internally, therefore we can just flush the internal cursor 
-     * position
-     */ 
-    flush_cursor(term_window->current_cursor);
 
+    /* Now, we clear from the cursor position till the end of the screen, 
+     * Effectively erasing everything on the screen */
+    clear_from_cursor(beginning_cursor);
+    
+    /* We update the internal cursor position to the beginning of the line */
+    copy_cursor(beginning_cursor, term_window->current_cursor); 
+
+    for (i = 0; i < current_line_input->line_length; i++)
+    {
+        put_char_on_screen(current_line_input->line[i]);
+
+    }
+
+    /* As put_char_on_screen increments the cursor, we have to put back
+     * the cursor position back to where it was before this function call
+     */
+    //flush_cursor(backup_cursor);
+
+    /* We also need to put back the cursor position the actual terminal cursor */
+    //copy_cursor(backup_cursor, term_window->current_cursor);
+    
+    /* Don't forget to free the structure */
+    //destroy_cursor(&backup_cursor);
 }
 static void arrow_down(shell_t *shell)
 {
@@ -243,7 +295,7 @@ history_line_t *read_input(shell_t *shell)
                     put_char_on_screen(current_byte);
                     insert_byte(input_ptr, current_byte, current_line_input->line_length - (input_ptr - current_line_input->line));
                     input_ptr++;
-                    redraw();
+                    redraw_after_cursor();
                 }
                 else {
                     /* If we are here, we insert the character at the end of the
