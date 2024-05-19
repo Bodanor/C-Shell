@@ -5,6 +5,7 @@
 #include "shell.h"
 #include "history.h"
 
+extern history_line_t *current_line_input;
 history_line_t *read_input(shell_t *shell);
 void redraw_from_beginning_cursor();
 void redraw_input();

@@ -20,19 +20,20 @@ static void window_resize_handler(int signum)
 
     /* Get the new terminal window size */
     get_terminal_window_size(term_window->current_window);
-
-    /* Check that the cursor is outside the new window dimension. If yes,
-     * We have to redraw everything. Resizing should happend if the cursor is
-     * one column outside the window dimension or if the line number
-     * is different from the initial cursor line position
-     */
-    if (term_window->current_cursor->current_x > term_window->current_window->max_columns || term_window->current_cursor->current_y != term_window->beginning_output_cursor->current_y) {
+    
+    /* Check that the last characters already present on the screen are not
+     * out of bounds. If yes, we have to redraw everything to fit the new 
+     * window size
+     */ 
+    if (term_window->beginning_input_cursor->current_x + current_line_input->line_length > term_window->current_window->max_columns || term_window->current_cursor->current_y != term_window->beginning_output_cursor->current_y) {
         
-       /* Don't know why bu I came to the conclusion that this loop is better
+       /* Don't know why but I came to the conclusion that this loop is better
         * visually when resizing */ 
-        for (i = 0; i < (term_window->current_cursor->current_y - term_window->beginning_output_cursor->current_y) * 2; i++) {
-           printf("\033[1F");
+        for (i = 0; i < term_window->current_cursor->current_y - term_window->beginning_output_cursor->current_y; i++) {
+           printf("\033[2F");
         } 
+        /* Move the cursor to column zero */
+        printf("\033[0G");
         /* Reflect the current cursor position based on the 'virtual' one */
         update_cursor_pos(term_window->current_cursor);
         /* Clear from the cursor till the end of the screen */

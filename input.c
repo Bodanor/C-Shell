@@ -14,7 +14,7 @@
 static char *input_ptr; 
 
 /* This is the currently edited line */
-static history_line_t *current_line_input;
+history_line_t *current_line_input;
 
 /* This is a backup line in case the user cycles through history */
 static history_line_t *old_line_input;
@@ -226,7 +226,7 @@ history_line_t *read_input(shell_t *shell)
      * to update their coordinates from here
      */
     update_cursor_pos(term_window->current_cursor);
-    update_cursor_pos(term_window->beginning_input_cursor);
+    copy_cursor(term_window->current_cursor, term_window->beginning_input_cursor);
 
     /* In raw mode, the enter key returns a carriage return character. I could 
      * have enable '\n' in the termios properties but oh well ..
