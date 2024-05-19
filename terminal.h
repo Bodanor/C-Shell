@@ -7,12 +7,14 @@
 typedef struct terminal_t {
     term_window_t *current_window;
     Cursor *current_cursor;
+    Cursor *beginning_input_cursor;
+    Cursor *beginning_output_cursor;
 } Terminal;
+
 
 /* This should be a global variable and should be accessible by other modules */
 extern Terminal *term_window;
 
 void init_terminal(void);
 void destroy_terminal(void);
-void put_char_on_screen(const unsigned int c);
 #endif

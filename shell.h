@@ -17,7 +17,11 @@ typedef struct shell_s {
 
 }shell_t;
 
-shell_t *init_shell(void);
-void destroy_shell(shell_t **shell);
-void shell_prompt(shell_t *shell);
+extern shell_t *current_shell_prop;
+
+int init_shell(void);
+void destroy_shell(void);
+void shell_prompt(void);
+void put_char_on_screen(const unsigned int c);
+void put_string_on_screen(const char *string, int string_size);
 #endif

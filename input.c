@@ -6,14 +6,12 @@
 
 #include "input.h"
 #include "cursor.h"
+#include "shell.h"
 #include "terminal.h"
 #include "util.h"
 
 /* This is the actual current input pointer*/
 static char *input_ptr; 
-
-/* This stores the beginning of the cursor */
-static Cursor *beginning_cursor; 
 
 /* This is the currently edited line */
 static history_line_t *current_line_input;
@@ -59,41 +57,25 @@ void redraw_after_cursor()
 
 }
 
-void redraw()
+void redraw_from_beginning_cursor()
 {
     Cursor *backup_cursor;
     int i;
 
-    /* We have to backup the cursor as put_char_on_screen increments the cursor
-     * as every character is printed
-     */ 
-
-    backup_cursor = dup_cursor(term_window->current_cursor);
-    
-
-    /* Now, we clear from the cursor position till the end of the screen, 
-     * Effectively erasing everything on the screen */
-    clear_from_cursor(beginning_cursor);
+    clear_from_cursor(term_window->beginning_input_cursor);
     
     /* We update the internal cursor position to the beginning of the line */
-    copy_cursor(beginning_cursor, term_window->current_cursor); 
+    copy_cursor(term_window->beginning_input_cursor, term_window->current_cursor); 
 
-    for (i = 0; i < current_line_input->line_length; i++)
-    {
-        put_char_on_screen(current_line_input->line[i]);
+    redraw_input();
+}
 
-    }
+void redraw_input()
+{
+    unsigned int i;
 
-    /* As put_char_on_screen increments the cursor, we have to put back
-     * the cursor position back to where it was before this function call
-     */
-    //flush_cursor(backup_cursor);
+    put_string_on_screen(current_line_input->line, current_line_input->line_length);
 
-    /* We also need to put back the cursor position the actual terminal cursor */
-    //copy_cursor(backup_cursor, term_window->current_cursor);
-    
-    /* Don't forget to free the structure */
-    //destroy_cursor(&backup_cursor);
 }
 static void arrow_down(shell_t *shell)
 {
@@ -116,7 +98,7 @@ static void arrow_down(shell_t *shell)
             cycle_history_down(shell->history, current_line_input);
         }
         
-        redraw();
+        redraw_from_beginning_cursor();
         /* Reset the buffer pointer to point to the end of the current line */
         input_ptr = &current_line_input->line[current_line_input->line_length];
     }
@@ -136,7 +118,7 @@ static void arrow_up(shell_t *shell)
 
     cycle_history_up(shell->history, current_line_input);
     
-    redraw();
+    redraw_from_beginning_cursor();
     /* Reset the buffer pointer to point to the end of the current line */
     input_ptr = &current_line_input->line[current_line_input->line_length];
 }
@@ -239,10 +221,12 @@ history_line_t *read_input(shell_t *shell)
      */
 
     input_ptr = current_line_input->line;
-
-    /* Save the beginning of the cursor, so that redraw becomes easier when needed */
-    term_window->current_cursor = init_cursor();
-    beginning_cursor = init_cursor();
+    
+    /* The cursor should have already been initialized, we just therefore have
+     * to update their coordinates from here
+     */
+    update_cursor_pos(term_window->current_cursor);
+    update_cursor_pos(term_window->beginning_input_cursor);
 
     /* In raw mode, the enter key returns a carriage return character. I could 
      * have enable '\n' in the termios properties but oh well ..
